@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>CiberBank - Asistente Virtual (Seguro)</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; background: #f5f5f5; }
+        h1 { color: #27ae60; }
+        #chat-box { background: white; border: 1px solid #ddd; border-radius: 8px; height: 400px; overflow-y: auto; padding: 16px; margin-bottom: 12px; }
+        .message { margin-bottom: 12px; }
+        .user { color: #2c3e50; font-weight: bold; }
+        .assistant { color: #27ae60; }
+        .error { color: #c0392b; font-style: italic; }
+        #input-area { display: flex; gap: 8px; }
+        #user-input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
+        #char-count { font-size: 12px; color: #7f8c8d; margin-bottom: 8px; }
+        button { padding: 10px 20px; background: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #229954; }
+        #reset-btn { background: #7f8c8d; }
+        .secure-badge { background: #d5f5e3; border-left: 4px solid #27ae60; padding: 10px; margin-bottom: 16px; font-size: 13px; }
+    </style>
+</head>
+<body>
+    <h1>CiberBank — Asistente Virtual</h1>
+    <div class="secure-badge">
+        ✅ <strong>VERSIÓN SEGURA</strong> — Mitigaciones OWASP LLM01, LLM05, LLM07 aplicadas.
+    </div>
+    <div id="chat-box"></div>
+    <div id="char-count">0 / 500 caracteres</div>
+    <div id="input-area">
+        <input type="text" id="user-input" placeholder="Escribe tu mensaje..." maxlength="500" />
+        <button onclick="sendMessage()">Enviar</button>
+        <button id="reset-btn" onclick="resetChat()">Reiniciar</button>
+    </div>
+
+    <script>
+        const chatBox = document.getElementById("chat-box");
+        const userInput = document.getElementById("user-input");
+        const charCount = document.getElementById("char-count");
+
+        userInput.addEventListener("input", () => {
+            charCount.textContent = `${userInput.value.length} / 500 caracteres`;
+        });
+        userInput.addEventListener("keydown", e => { if (e.key === "Enter") sendMessage(); });
+
+        function appendMessage(role, text, isError = false) {
+            const wrapper = document.createElement("div");
+            wrapper.className = "message";
+
+            const label = document.createElement("span");
+            label.className = isError ? "error" : role;
+            label.textContent = isError ? "Sistema" : (role === "user" ? "Tú" : "Asistente");
+
+            const content = document.createElement("span");
+            // MITIGACIÓN LLM05: textContent en lugar de innerHTML
+            // El texto se trata como texto plano, nunca como HTML ejecutable.
+            content.textContent = ": " + text;
+
+            wrapper.appendChild(label);
+            wrapper.appendChild(content);
+            chatBox.appendChild(wrapper);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const message = userInput.value.trim();
+            if (!message) return;
+            userInput.value = "";
+            charCount.textContent = "0 / 500 caracteres";
+            appendMessage("user", message);
+
+            const res = await fetch("/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message })
+            });
+            const data = await res.json();
+
+            if (data.error) {
+                appendMessage("", data.error, true);
+            } else {
+                appendMessage("assistant", data.response);
+            }
+        }
+
+        async function resetChat() {
+            await fetch("/reset", { method: "POST" });
+            chatBox.innerHTML = "";
+        }
+    </script>
+</body>
+</html>
