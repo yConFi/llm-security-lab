@@ -11,8 +11,15 @@ Construido como material de formación y portfolio en el área de AI/LLM Securit
 ```
 llm-security-lab/
 ├── src/
-│   └── chat.py        # Cliente de conversación con historial
-├── .env               # API key (no incluido en el repo)
+│   └── chat.py                  # Cliente CLI con historial de conversación
+├── vulnerable-lab/
+│   ├── app.py                   # Flask app con vulnerabilidades intencionadas
+│   └── templates/index.html
+├── secure-lab/
+│   ├── app.py                   # Flask app blindada con mitigaciones OWASP
+│   └── templates/index.html
+├── .env                         # API key (no incluido en el repo)
+├── .env.example
 ├── .gitignore
 ├── requirements.txt
 └── README.md
@@ -55,11 +62,21 @@ cp .env.example .env
 
 ## Uso
 
+**Cliente CLI:**
 ```bash
 python src/chat.py
 ```
-
 El asistente mantiene historial de conversación durante la sesión. Escribe `salir` para terminar.
+
+**Lab vulnerable** (puerto 5000):
+```bash
+python vulnerable-lab/app.py
+```
+
+**Lab seguro** (puerto 5001):
+```bash
+python secure-lab/app.py
+```
 
 ---
 
@@ -69,7 +86,7 @@ El asistente mantiene historial de conversación durante la sesión. Escribe `sa
 |------|-----------|--------|
 | Semanas 1-2 | Teoría OWASP Top 10 for LLM Applications | ✅ Completado |
 | Semanas 3-4 | App básica con API de Claude + historial | ✅ Completado |
-| Semanas 5-8 | Lab Flask vulnerable + ataques + mitigaciones | 🔜 Próximamente |
+| Semanas 5-8 | Lab Flask vulnerable + ataques + mitigaciones | ✅ Completado |
 
 ---
 
