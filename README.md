@@ -90,7 +90,7 @@ python secure-lab/app.py
 
 ---
 
-## Vulnerabilidades cubiertas (Semanas 5-8)
+## Vulnerabilidades cubiertas
 
 - **LLM01** — Prompt Injection
 - **LLM02** — Sensitive Information Disclosure
