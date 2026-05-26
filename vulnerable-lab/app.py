@@ -48,6 +48,9 @@ def chat():
         messages=messages,
     )
 
+    if not response.content:
+        return jsonify({"error": "Sin respuesta del modelo."}), 200
+
     assistant_message = response.content[0].text
     messages.append({"role": "assistant", "content": assistant_message})
     session["messages"] = messages

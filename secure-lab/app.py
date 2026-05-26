@@ -100,6 +100,10 @@ def chat():
         messages=messages,
     )
 
+    if not response.content:
+        logger.warning("El modelo devolvio contenido vacio — posible rechazo silencioso.")
+        return jsonify({"error": "El asistente no pudo procesar tu mensaje. Intenta reformularlo."}), 200
+
     assistant_message = response.content[0].text
 
     # MITIGACIÓN LLM05 - Validación básica del output:
